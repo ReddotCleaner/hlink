@@ -51,7 +51,7 @@ docker run -d --name hlink \
 -e HLINK_HOME=$YOUR_HLINK_HOME_DIR \
 -p 9090:9090 \
 -v $YOUR_NAS_VOLUME_PATH:$DOCKER_VOLUME_PATH \
-likun7981/hlink:latest
+reddorcleaner/hlink:latest
 ```
 
 ## 使用 docker compose
@@ -61,7 +61,7 @@ version: '2'
 
 services:
   docker:
-    image: likun7981/hlink:latest # docker镜像名称
+    image: reddorcleaner/hlink:latest # docker镜像名称
     restart: on-failure
     ports: # 这个端口映射
       - 9090:9090
