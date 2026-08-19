@@ -12,20 +12,37 @@
 </p>
 
 # hlink
+
 > 批量、快速硬链工具(The batch, fast hard link toolkit)
 
 - 💡 重复检测：支持文件名变更的重复检测
-- ⚡️ 快速：`20000+`文件只需要1分钟
-- 📦 多平台：支持Windows、Mac、Linux
+- ⚡️ 快速：`20000+`文件只需要 1 分钟
+- 📦 多平台：支持 Windows、Mac、Linux
 - 🛠️ 丰富的配置：支持黑白名单，缓存等多个配置
 - 🔩 修剪机制：让你更方便的同步源文件和硬链
 - 🌐 WebUI：图形化界面让你更方便的管理
 - 🐳 Docker：无需关心环境问题
 
-
 更多介绍：https://hlink.likun.me
 
-## 使用docker run
+## 最近更新 (2.0.11)
+
+### 🐛 问题修复
+
+- **超大文件量任务崩溃**：单个分析任务返回 ~20 万+ 文件时，`parseResults.push(...arr)` 因参数过多触发 `RangeError: Maximum call stack size exceeded`，改为循环逐个 push 彻底解决（[#141](https://github.com/likun7981/hlink/issues/141)）
+- **单文件权限失败中断整任务**：遇到 `EACCES` 等权限错误时，现在会记入失败列表并跳过该文件，不再让一个文件拖死整个任务
+- **WebUI 进度看不到文件名**：非 TTY（WebUI）场景下进度条现在会显示当前正在处理的文件
+- **重跑大库卡顿**：分析阶段 `dstInodes`/`cached` 改用 `Set` 查找，消除原有 O(n²) 卡顿
+- **浏览器卡顿**：运行日志改用滚动窗口（500 条）+ 即时滚动，条数再多也不会卡
+
+### ✨ 新功能
+
+- **任务执行状态**：任务列表新增"执行中"徽章（5 秒轮询 `/api/task/running`），关闭页面重开后仍能看到运行状态，点击可重新接入实时进度
+- **状态同步到 Docker 日志**：任务进度与状态现在会输出到 `docker logs`，关闭浏览器也能查看；并新增 `开始/完成/失败` 任务级边界标记
+- **镜像从源码构建**：Dockerfile 改为多阶段从本地源码构建，不再 `npm i -g hlink` 拉取发布包
+
+## 使用 docker run
+
 ```bash
 docker run -d --name hlink \
 -e PUID=$YOUR_USER_ID \
@@ -37,7 +54,8 @@ docker run -d --name hlink \
 likun7981/hlink:latest
 ```
 
-## 使用docker compose
+## 使用 docker compose
+
 ```yml
 version: '2'
 
@@ -58,46 +76,14 @@ services:
 
 `$YOUR_USER_ID`、`$YOUR_GROUP_ID`、`$YOUR_UMASK`、`$YOUR_HLINK_HOME_DIR`、`$YOUR_NAS_VOLUME_PATH`、`$DOCKER_VOLUME_PATH`为变量，根据自己的情况自行设置
 
+## WebUI 截图
 
-## 使用npm安装
-```bash
-npm i -g hlink
-
-# 帮助
-hlink --help
-```
-<img src="https://user-images.githubusercontent.com/13427467/148177243-50ce207f-a31e-4a0a-b601-27ea9cbb1e1f.png" width="520"/>
-
-## WebUI截图
 <img src="https://user-images.githubusercontent.com/13427467/177048631-04dc6ace-af3a-4459-8848-13cc3c928856.png" width="520"/>
 
 ## 效果截图
+
 <img src="https://user-images.githubusercontent.com/13427467/148171766-ccbe2a1a-c30c-4e1a-868c-4e2c69617d29.png" width="520"/>
-
-## 打赏作者
-
-请作者喝一杯咖啡😄
-
-<img width="300" src="https://user-images.githubusercontent.com/13427467/148188331-c997f355-2a80-46b9-ba6b-d189186ac356.png" /><img width="300" src="https://user-images.githubusercontent.com/13427467/148188398-d6d9e8e5-bd75-4de4-9faa-dbd4846b4103.png" />
-
-- 脱光游侠/诈尸求邀没结果 `16.60 RMB`
-- 月与徘徊 `10.00 RMB`
-- 庭下雀 `88.00 RMB`
-- *宋 `30.00 RMB`
-- *黑 `18.00 RMB`
-- *宋 `20.00 RMB`
-- *沐 `30.00 RMB`
-- *春 `1.00 RMB`
-- *卷 `20.00 RMB`
-- H*r `20.00 RMB`
-- *. `3.00 RMB`
-- *府 `80.00 RMB`
-- every*Ok `20.00 RMB`
-
-感谢各位的支持，如果有遗漏，实在抱歉，可联系作者补充~
-
 
 # License
 
 [MIT](https://github.com/likun7981/hlink/blob/master/LICENSE)
-

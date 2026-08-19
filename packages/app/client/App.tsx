@@ -103,7 +103,15 @@ function App() {
           </Row>
         </Content>
         <Footer className="text-center border-t border-#eee">
-          MIT Licensed | Copyright © 2019-present likun & hlink Contributors
+          MIT Licensed | Copyright © 2019-present likun,{' '}
+          <a
+            href="https://github.com/ReddotCleaner/hlink"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ReddotCleaner
+          </a>
+          , GLM & hlink Contributors
         </Footer>
       </Layout>
       <CacheEditor visible={visible} onClose={() => setVisible(false)} />
