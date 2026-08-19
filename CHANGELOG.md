@@ -1,3 +1,19 @@
+## [2.0.11](https://github.com/ReddotCleaner/hlink/compare/v2.0.10...a34a6cc) (2026-08-19)
+
+### Bug Fixes
+
+- **core:** avoid `RangeError: Maximum call stack size exceeded` when a single analysis task returns ~200k+ files by replacing spread push (`push(...arr)`) with a loop, close [#141](https://github.com/likun7981/hlink/issues/141) ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **core:** tolerate single-file permission errors (`EACCES`) by recording them as ignorable failures instead of aborting the whole task ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **core:** show the current file in non-TTY (WebUI) progress output so each progress line is no longer anonymous ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **core:** eliminate O(n²) lookup stall when re-analyzing large existing libraries by switching `dstInodes`/`cached` to `Set` ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **app:** fix browser lag on huge run logs via a capped scroll window (500 lines) and instant scroll ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+
+### Features
+
+- **app:** show an "执行中" badge on the task list that survives page reload (`GET /api/task/running`, 5s polling), and re-attaches to the live stream when clicked ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **app:** stream task progress and status to `docker logs` so they remain visible after closing the browser; add per-task `开始/完成/失败` markers ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+- **docker:** build the image from local source via a multi-stage Dockerfile instead of `npm i -g hlink` ([a34a6cc](https://github.com/ReddotCleaner/hlink/commit/a34a6cc1965f64bd6cb8cca60224d58c45f72da6))
+
 ## [2.0.10](https://github.com/likun7981/hlink/compare/v2.0.9...v2.0.10) (2023-05-30)
 
 ### Bug Fixes
