@@ -27,7 +27,12 @@ function RunDetail(props: IProps) {
           onMessage(sendData) {
             const { output, status, type, confirm } = sendData
             if (output) {
-              logRef.current = logRef.current.concat(output)
+              // 限制缓冲为滚动窗口（最近 MAX 条），避免条数过多时
+              // RunPanel 每次都要重排全量日志导致浏览器卡死
+              const MAX = 500
+              const next = logRef.current.concat(output)
+              logRef.current =
+                next.length > MAX ? next.slice(next.length - MAX) : next
             }
             const updated: TUpdateProps = {
               title: (

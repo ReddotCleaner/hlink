@@ -16,6 +16,13 @@ router.get('/list', async (ctx) => {
 })
 
 /**
+ * @description 获取正在执行的任务名称列表
+ */
+router.get('/running', async (ctx) => {
+  ctx.body = task.running()
+})
+
+/**
  * @description 获取任务配置详情
  */
 router.get('/', async (ctx) => {

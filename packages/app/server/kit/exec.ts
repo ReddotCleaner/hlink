@@ -43,6 +43,17 @@ export function start<T extends 'main' | 'prune'>(
       },
     }
   )
+  // 把子进程 stdout/stderr 同步到服务进程标准输出（→ docker logs），
+  // 这样关闭 Web 页面后也能从 docker logs 看到任务执行进度与状态。
+  // 只在进程启动时挂一次，避免重复 attach 造成重复输出。
+  monitor.stdout?.on('data', (e) => {
+    const str = e.toString()
+    if (str) process.stdout.write(str)
+  })
+  monitor.stderr?.on('data', (e) => {
+    const str = e.toString()
+    if (str) process.stderr.write(str)
+  })
   const handleLog = (_log: LogType) => {
     monitor.stdout?.on('data', (e) => {
       const str = e.toString()
@@ -106,4 +117,10 @@ export function getFiles(name: string) {
 export function clearFiles(name: string) {
   waitingDeleteFiles[name] = null
   return true
+}
+
+export function runningList(): string[] {
+  return Object.entries(ongoingTasks)
+    .filter(([, v]) => !!v)
+    .map(([k]) => k)
 }

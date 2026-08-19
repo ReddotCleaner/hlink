@@ -14,6 +14,7 @@ function TaskList() {
   const [showConfigName, setShowConfigName] = useState<string>()
   const [runTaskName, setRunTaskName] = useState<string>()
   const list = taskService.useList()
+  const running = taskService.useRunning()
   const configList = configService.useList()
   const optTask = taskService.useAddOrEdit({
     onSuccess() {
@@ -86,6 +87,7 @@ function TaskList() {
                   <TaskItem
                     data={item}
                     index={i}
+                    running={running.data?.includes(item.name)}
                     onEdit={(name) => {
                       task.getItem(name)
                     }}

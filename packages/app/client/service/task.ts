@@ -112,6 +112,13 @@ export function useList() {
   return useSWR('/api/task/list', (url) => fetch.get<TTask[]>(url))
 }
 
+export function useRunning() {
+  // 轮询正在执行的任务，让页面关闭重开后也能在列表上看到“执行中”状态
+  return useSWR('/api/task/running', (url) => fetch.get<string[]>(url), {
+    refreshInterval: 5000,
+  })
+}
+
 export function useGet(options?: CallbackOption<TTask>) {
   const [name, getItem] = useState<string>()
   const result = useSWR(

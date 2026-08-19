@@ -39,20 +39,22 @@ async function analyse(config: IOptions) {
   ].join(' ')
   log.info('执行分析任务:', taskName)
   const parseResults = await parseLsirfl(source)
-  const dstInodes = await getInodes(dest)
+  // 用 Set 做 O(1) 查找，避免大库（源/目标各 20 万+）时
+  // dstInodes.indexOf / cached.includes 在 forEach 内造成 O(n*m) 卡死
+  const dstInodeSet = new Set(await getInodes(dest))
   const existFiles: string[] = []
   const waitLinkFiles: WaitLinks[] = []
   const excludeFiles: string[] = []
   const cacheFiles: string[] = []
-  const cached = cacheRecord.read()
+  const cachedSet = openCache ? new Set(cacheRecord.read()) : new Set<string>()
 
   parseResults.forEach((parseResult) => {
     const { fullPath } = parseResult
     if (!supported(fullPath, include, exclude)) {
       excludeFiles.push(fullPath)
-    } else if (dstInodes.indexOf(parseResult.inode) > -1) {
+    } else if (dstInodeSet.has(parseResult.inode)) {
       existFiles.push(fullPath)
-    } else if (openCache && cached.includes(fullPath)) {
+    } else if (openCache && cachedSet.has(fullPath)) {
       cacheFiles.push(fullPath)
     } else {
       waitLinkFiles.push({

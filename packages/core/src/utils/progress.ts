@@ -226,10 +226,16 @@ export class SimpleProgressBar {
     this.current = 0
     this.stepCount = Math.min(Math.max(Math.ceil(this.total / 10), 10), 199)
   }
-  tick = (count: number) => {
+  tick = (count: number, tokens?: TokenType) => {
     this.current += count
     if (this.current % this.stepCount === 0 || this.total - this.current < 10) {
-      log.info(`执行中，当前进度${this.current}/${this.total}`)
+      // 非 TTY（如 WebUI/Docker）场景下也展示当前正在处理的文件
+      const file = tokens?.file
+      if (file) {
+        log.info(`执行中，当前进度${this.current}/${this.total}`, file)
+      } else {
+        log.info(`执行中，当前进度${this.current}/${this.total}`)
+      }
     }
   }
 }

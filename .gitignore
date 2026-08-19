@@ -22,3 +22,6 @@ dist-ssr
 /.vscode
 /packages/app/db.json
 /packages/app/hlink
+
+# Docker image exports
+*.tar

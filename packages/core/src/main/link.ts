@@ -35,6 +35,24 @@ async function link(
       if (error.signal === 'SIGINT') {
         throw e
       }
+      // 单个文件权限不足（ensureDir 的 EACCES 或 ln 的 "Permission denied"）
+      // 记为失败并跳过，避免一个无权限文件拖死整个任务
+      const errText = (error.stderr || error.message || '') as string
+      const errCode = (error as { code?: string }).code
+      if (
+        errCode === 'EACCES' ||
+        errText.toLowerCase().indexOf('permission denied') > -1
+      ) {
+        throw new HLinkError(
+          ErrorCode.PermissionDenied,
+          `${chalk.gray(getDirBasePath(source, sourceFile))} ${chalk.cyan(
+            '>'
+          )} ${getDirBasePath(
+            dest,
+            path.join(originalDestPath, path.basename(sourceFile))
+          )}`
+        )
+      }
       const findError = knownError.find(
         (err: string) => (error.stderr || error.message).indexOf(err) > -1
       )

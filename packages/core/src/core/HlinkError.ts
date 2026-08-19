@@ -4,6 +4,7 @@ export enum ErrorCode {
   FileExists = 'FileExists',
   CrossDeviceLink = 'CrossDeviceLink',
   NotPermitted = 'NotPermitted',
+  PermissionDenied = 'PermissionDenied',
 }
 
 const codeBehaviorMapping: Record<ErrorCode, () => false | string> = {
@@ -24,6 +25,9 @@ const codeBehaviorMapping: Record<ErrorCode, () => false | string> = {
   },
   [ErrorCode.FileExists]: () => {
     return '目标地址文件已经存在'
+  },
+  [ErrorCode.PermissionDenied]: () => {
+    return '权限不足，无法创建目标目录或硬链'
   },
 }
 

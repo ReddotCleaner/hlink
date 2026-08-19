@@ -22,11 +22,13 @@ function RunPanel(props: TProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const n = requestAnimationFrame(() => {
-      if (containerRef.current) {
-        containerRef.current.scrollTo({
-          top: containerRef.current.scrollHeight,
-          behavior: 'smooth',
-        })
+      const el = containerRef.current
+      if (!el) return
+      // 仅在用户已停在底部附近时自动跟随，避免抢占用户向上查看
+      const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 60
+      if (nearBottom) {
+        // 用即时滚动替代 smooth，避免高频更新时反复触发布局动画
+        el.scrollTo({ top: el.scrollHeight, behavior: 'auto' })
       }
     })
     return () => {

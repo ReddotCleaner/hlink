@@ -1,0 +1,10 @@
+# 避免把宿主机的 node_modules（平台相关二进制）与本地构建产物拷入镜像
+**/node_modules
+.git
+packages/core/lib
+packages/cli/lib
+packages/app/dist
+*.tgz
+docs
+.husky
+**/.DS_Store

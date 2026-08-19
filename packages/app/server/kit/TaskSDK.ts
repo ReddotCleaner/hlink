@@ -126,13 +126,11 @@ class TaskSDK extends BaseSDK<'tasks'> {
 
   async start(name: string) {
     const result = await this.getConfig(name)
+    // exec.start 内部已把子进程输出桥接到服务进程 stdout（→ docker logs），
+    // 这里不再重复 console.log，也避免原来对每行日志误打 "任务执行出错"
     const currentMonitor = exec.start(name, result.command, {
       ...result.config,
       usedBy: 'terminal',
-    })
-    currentMonitor.handleLog((d) => {
-      log.error('任务执行出错', name)
-      console.log(d)
     })
     return currentMonitor.original
   }
@@ -146,6 +144,8 @@ class TaskSDK extends BaseSDK<'tasks'> {
         type: result.command,
       })
     } else {
+      // 任务级标记，方便在 docker logs 中区分每次执行
+      console.log(`[hlink] ===== 任务 ${name} 开始执行 =====`)
       currentMonitor = exec.start(name, result.command, result.config)
     }
     currentMonitor.handleLog((data) => {
@@ -157,6 +157,7 @@ class TaskSDK extends BaseSDK<'tasks'> {
     })
     currentMonitor.original
       .then(async () => {
+        console.log(`[hlink] ===== 任务 ${name} 执行完成 =====`)
         log.send?.({
           status: 'succeed',
           type: result.command,
@@ -169,7 +170,7 @@ class TaskSDK extends BaseSDK<'tasks'> {
         })
       })
       .catch((e) => {
-        console.log(e)
+        console.log(`[hlink] ===== 任务 ${name} 执行失败 =====`, e)
         if (e.killed) {
           return log.send?.({
             status: 'failed',
@@ -192,6 +193,10 @@ class TaskSDK extends BaseSDK<'tasks'> {
 
   cancel(name: string) {
     return exec.cancel(name)
+  }
+
+  running(): string[] {
+    return exec.runningList()
   }
 
   async confirmRemove(name: string, cancel = true) {

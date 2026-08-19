@@ -21,6 +21,7 @@ const Meta = Card.Meta
 type TProps = {
   data: TTask
   index: number
+  running?: boolean
   onEdit: (name: string) => void
   onDelete: (name: string) => void
   onShowConfig: (config: string) => void
@@ -34,6 +35,7 @@ function TaskItem(props: TProps) {
   const {
     data,
     index,
+    running,
     onEdit,
     onDelete,
     onShowConfig,
@@ -179,7 +181,20 @@ function TaskItem(props: TProps) {
         >
           <Meta
             avatar={<Avatar src={data.type === 'main' ? LinkSvg : SyncSvg} />}
-            title={data.name}
+            title={
+              running ? (
+                <>
+                  {data.name}
+                  <Badge
+                    status="processing"
+                    text="执行中"
+                    style={{ marginLeft: 8 }}
+                  />
+                </>
+              ) : (
+                data.name
+              )
+            }
             description={
               <div className="h-66px">
                 配置:{' '}
